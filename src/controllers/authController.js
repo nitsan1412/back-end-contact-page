@@ -7,8 +7,7 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     // Check if a user with the given email or phone number already exists
-    const existingUser = await UserModel.findOne({ email });
-    // .populate("pages")
+    const existingUser = await UserModel.findOne({ email }).populate("pages");
     // .populate("background");
     if (!existingUser) {
       return res.status(400).json({
@@ -29,6 +28,7 @@ exports.login = async (req, res) => {
         _id: existingUser._id,
         user_name: existingUser.user_name,
         email: existingUser.email,
+        pages: existingUser.pages,
       },
       token: token,
       success: true,
@@ -42,8 +42,7 @@ exports.getUserInfo = async (req, res) => {
   const { userId } = req.user;
   try {
     // Check if a user with the given email or phone number already exists
-    const existingUser = await UserModel.findOne({ _id: userId });
-    // .populate("pages")
+    const existingUser = await UserModel.findById(userId).populate("pages");
     // .populate("background");
     if (!existingUser) {
       return res.status(400).json({
@@ -55,6 +54,7 @@ exports.getUserInfo = async (req, res) => {
         _id: existingUser._id,
         user_name: existingUser.user_name,
         email: existingUser.email,
+        pages: existingUser.pages,
       },
       success: true,
     });
@@ -67,7 +67,7 @@ exports.createUser = async (req, res) => {
   const { user_name, email, password } = req.body;
   try {
     // Check if a user with the given email or phone number already exists
-    const existingUser = await UserModel.findOne({ email }).lean();
+    const existingUser = await UserModel.findOne({ email }).populate("pages");
     if (existingUser) {
       return res.status(501).json({
         error: "User with the same email already exists",
@@ -78,7 +78,6 @@ exports.createUser = async (req, res) => {
         email,
         password,
       });
-      await console.log(newUser);
       if (newUser["_id"]) {
         const token = await generateToken(newUser._id);
         return await res

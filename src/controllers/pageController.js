@@ -1,25 +1,22 @@
 const dataAccess = require("../logic/data-access");
 const PageModel = require("../models/Page");
+const UserModel = require("../models/User");
 
 exports.getAllPagesForUser = async (req, res) => {
-  const { userId } = req.params;
+  const userId = req.params.userId;
+
   try {
     // Check if a user with the given email or phone number already exists
-    const existingUser = await PageModel.find({
+    const existingUser = await UserModel.findById({
       user_id: userId,
       deletedAt: null,
-    });
-    // .populate("pages")
+    }).populate("pages");
     // .populate("background");
     if (!existingUser) {
       return res.status(400).json({
         error: "User dosen't exists",
       });
     }
-    const token = await generateToken({
-      id: existingUser._id,
-      username: existingUser.user_name,
-    });
     return res
       .status(200)
       .send({ user: existingUser, token: token, success: true });
@@ -76,33 +73,39 @@ exports.getPage = async (req, res) => {
   }
 };
 
-exports.createPage = async (req, res) => {
-  const { user_name, email, password } = req.body;
+exports.create = async (req, res) => {
+  const {
+    class_name,
+    school_name,
+    address,
+    school_phone,
+    manager_name,
+    starting_year,
+    link_for_registration,
+    page_link,
+    user,
+  } = req.body;
   try {
-    // Check if a user with the given email or phone number already exists
-    const existingUser = await UserModel.findOne({ email }).lean();
-    if (existingUser) {
-      return res.status(501).json({
-        error: "User with the same email already exists",
-      });
-    } else {
-      const newUser = await UserModel.create({
-        user_name,
-        email,
-        password,
-      });
-      await console.log(newUser);
-      if (newUser["_id"]) {
-        const token = await generateToken({
-          id: newUser._id,
-          username: newUser.user_name,
-        });
-        return await res
-          .status(200)
-          .json({ user: newUser, token: token, success: true });
-      }
+    const newPage = await PageModel.create({
+      class_name,
+      school_name,
+      address,
+      school_phone,
+      manager_name,
+      starting_year,
+      link_for_registration,
+      page_link,
+    });
+    console.log(newPage);
+    if (newPage["_id"]) {
+      const updatedUser = await UserModel.findOneAndUpdate(
+        { _id: user._id },
+        { $push: { pages: newPage } },
+        { returnOriginal: false }
+      ).populate("pages");
+      console.log("updatedUser", updatedUser);
+      return await res.status(200).json({ user: updatedUser });
     }
-    // res.status(201).json(user);
   } catch (error) {
     await res.status(502).json({ error: error.message });
   }

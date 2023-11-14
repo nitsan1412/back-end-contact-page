@@ -5,6 +5,7 @@ const db = require("./src/data/database");
 const cors = require("cors");
 
 const authRoutes = require("./src/routes/auth");
+const pageRoutes = require("./src/routes/page");
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ db.once("open", () => {
   app.use(express.json());
 
   app.use("/auth", authRoutes);
+  app.use("/page", pageRoutes);
 
   // app.use((req, res, next) => {
   //   const error = new Error("Not Found");

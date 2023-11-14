@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
-const Schema = mongoose.Schema;
 
-const pageSchema = new Schema(
+const pageSchema = new mongoose.Schema(
   {
     id: ObjectId,
     class_name: String,
@@ -11,8 +10,8 @@ const pageSchema = new Schema(
     school_phone: String,
     manager_name: String,
     starting_year: Number,
-    link_for_registration: String,
-    page_link: String,
+    link_for_registration: { type: String, default: null },
+    page_link: { type: String, default: null },
     // teachers: [{ type: ObjectId, ref: "Teacher" }],
     // kids: [{ type: ObjectId, ref: "Kid" }],
     // background_id: ObjectId,
