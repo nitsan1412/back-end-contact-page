@@ -3,8 +3,8 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 // Function to generate a JWT token
-function generateToken(user) {
-  const payload = user;
+function generateToken(userId) {
+  const payload = { userId: userId };
   const options = {
     expiresIn: "1h", // Set the token to expire in 1 hour (adjust as needed)
   };

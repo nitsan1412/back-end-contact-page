@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 
 // Function to check a hash password
-async function compare(candidatePassword, hash) {
+async function comparePassword(candidatePassword, hash) {
   try {
     const isMatch = await bcrypt.compare(candidatePassword, hash);
     return isMatch;
@@ -11,4 +11,4 @@ async function compare(candidatePassword, hash) {
   }
 }
 
-module.exports = { compare };
+module.exports = { comparePassword };
