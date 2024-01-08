@@ -12,7 +12,7 @@ const pageSchema = new mongoose.Schema(
     starting_year: Number,
     link_for_registration: { type: String, default: null },
     page_link: { type: String, default: null },
-    // teachers: [{ type: ObjectId, ref: "Teacher" }],
+    teachers: [{ type: ObjectId, ref: "Teacher" }],
     // kids: [{ type: ObjectId, ref: "Kid" }],
     // background_id: ObjectId,
     deletedAt: { type: Date, default: null },

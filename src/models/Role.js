@@ -7,9 +7,9 @@ const roleSchema = new Schema({
   id: ObjectId,
   name: String,
   translation: String,
-  created_at: Date,
-  deleted_at: Date,
-  updated_at: Date,
+  createdAt: Date,
+  deletedAt: Date,
+  updatedAt: Date,
 });
 
 module.exports = mongoose.model("Role", roleSchema);

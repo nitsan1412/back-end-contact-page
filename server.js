@@ -6,6 +6,8 @@ const cors = require("cors");
 
 const authRoutes = require("./src/routes/auth");
 const pageRoutes = require("./src/routes/page");
+const teacherRoutes = require("./src/routes/teacher");
+const kidRoutes = require("./src/routes/kid");
 
 dotenv.config();
 const app = express();
@@ -21,6 +23,8 @@ db.once("open", () => {
 
   app.use("/auth", authRoutes);
   app.use("/page", pageRoutes);
+  app.use("/teacher", teacherRoutes);
+  app.use("/kid", kidRoutes);
 
   // app.use((req, res, next) => {
   //   const error = new Error("Not Found");
