@@ -110,7 +110,43 @@ exports.createRole = async (req, res) => {
 //   }
 // };
 
-exports.deletePage = async (req, res) => {
+exports.deleteRole = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await RoleModel.findOneAndUpdate(
+      { id: id },
+      { deletedAt: new Date(now) }
+    ).then((err, row) => {
+      if (err) return res.status(500).json({ error: err });
+      else {
+        return res.status(200).json({ message: "Deleted successfuly" });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+exports.deleteTeacher = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await TeacherModel.findOneAndUpdate(
+      { id: id },
+      { deletedAt: new Date(now) }
+    ).then((err, row) => {
+      if (err) return res.status(500).json({ error: err });
+      else {
+        return res.status(200).json({ message: "Deleted successfuly" });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+exports.deleteTeacherFromPage = async (req, res) => {
   try {
     const { id } = req.params;
     await PageModel.findOneAndUpdate(
@@ -119,7 +155,7 @@ exports.deletePage = async (req, res) => {
     ).then((err, row) => {
       if (err) return res.status(500).json({ error: err });
       else {
-        return res.status(200).json({ message: "Delete successful" });
+        return res.status(200).json({ message: "Deleted successfuly" });
       }
     });
   } catch (error) {

@@ -8,7 +8,7 @@ const pageSchema = new mongoose.Schema(
     school_name: String,
     address: String,
     school_phone: String,
-    manager_name: String,
+    principal_name: String,
     starting_year: Number,
     link_for_registration: { type: String, default: null },
     page_link: { type: String, default: null },

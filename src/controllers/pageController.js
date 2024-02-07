@@ -1,25 +1,23 @@
+const { log } = require("console");
 const dataAccess = require("../logic/data-access");
 const PageModel = require("../models/Page");
 const UserModel = require("../models/User");
 
 exports.getAllPagesForUser = async (req, res) => {
   const userId = req.params.userId;
-
   try {
-    // Check if a user with the given email or phone number already exists
-    const existingUser = await UserModel.findById({
-      user_id: userId,
+    const existiongUser = await UserModel.findOne({
+      _id: userId,
       deletedAt: null,
-    }).populate("pages");
-    // .populate("background");
-    if (!existingUser) {
-      return res.status(400).json({
-        error: "User dosen't exists",
-      });
-    }
-    return res
-      .status(200)
-      .send({ user: existingUser, token: token, success: true });
+    }).populate({
+      path: "pages",
+      populate: { path: "teachers" },
+    });
+    if (existiongUser) {
+      return res
+        .status(200)
+        .send({ pages: existiongUser.pages, success: true });
+    } else return res.status(400).json({ error: "user not found" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -29,9 +27,10 @@ exports.getAllPages = async (req, res) => {
   const { email, password } = req.body;
   try {
     // Check if a user with the given email or phone number already exists
-    const existingUser = await UserModel.findOne({ email, password })
-      .populate("pages")
-      .populate("background");
+    const existingUser = await UserModel.findOne({ email, password }).populate(
+      "pages"
+    );
+    // .populate("background");
     if (!existingUser) {
       return res.status(400).json({
         error: "User dosen't exists",
@@ -73,11 +72,11 @@ exports.create = async (req, res) => {
     school_name,
     address,
     school_phone,
-    manager_name,
+    principal_name,
     starting_year,
     link_for_registration,
     page_link,
-    user,
+    user_id,
   } = req.body;
   try {
     const newPage = await PageModel.create({
@@ -85,7 +84,7 @@ exports.create = async (req, res) => {
       school_name,
       address,
       school_phone,
-      manager_name,
+      principal_name,
       starting_year,
       link_for_registration,
       page_link,
@@ -93,7 +92,7 @@ exports.create = async (req, res) => {
     console.log(newPage);
     if (newPage["_id"]) {
       const updatedUser = await UserModel.findOneAndUpdate(
-        { _id: user._id },
+        { _id: user_id },
         { $push: { pages: newPage } },
         { returnOriginal: false }
       ).populate("pages");
