@@ -2,6 +2,7 @@ const { log } = require("console");
 const dataAccess = require("../logic/data-access");
 const PageModel = require("../models/Page");
 const UserModel = require("../models/User");
+const { createLinks } = require("../logic/createLinks");
 
 exports.getAllPagesForUser = async (req, res) => {
   const userId = req.params.userId;
@@ -74,8 +75,6 @@ exports.create = async (req, res) => {
     school_phone,
     principal_name,
     starting_year,
-    link_for_registration,
-    page_link,
     user_id,
   } = req.body;
   try {
@@ -86,20 +85,26 @@ exports.create = async (req, res) => {
       school_phone,
       principal_name,
       starting_year,
-      link_for_registration,
-      page_link,
     });
-    console.log(newPage);
     if (newPage["_id"]) {
+      const newStudentsLink = await createLinks(newPage["_id"], false);
+      const updatedPage = await PageModel.findOneAndUpdate(
+        { _id: newPage["_id"] },
+        { link_for_registration: newStudentsLink },
+        { returnOriginal: false }
+      );
       const updatedUser = await UserModel.findOneAndUpdate(
         { _id: user_id },
-        { $push: { pages: newPage } },
+        { $push: { pages: updatedPage } },
         { returnOriginal: false }
-      ).populate("pages");
-      console.log("updatedUser", updatedUser);
+      ).populate({
+        path: "pages",
+        populate: { path: "teachers" },
+      });
       return await res.status(200).json({ user: updatedUser });
     }
   } catch (error) {
+    console.log("in error", error);
     await res.status(502).json({ error: error.message });
   }
 };
